@@ -4,6 +4,7 @@
   "description": "**ERC20** Total supply: 1 billion EDEN Decimal factor: 18 Name: Eden Coin Symbol: EDEN",
   "main": "truffle.js",
   "scripts": {
+    "lint": "solium --dir 'contracts/'; exit 0",
     "test": "truffle test"
   },
   "author": "",
