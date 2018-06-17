@@ -1,8 +1,0 @@
-{
-    "extends": "default",
-    "rules": {
-      "indent": 2,
-      "compiler-fixed": false,
-      "var-name-mixedcase": false
-    }
-  }
