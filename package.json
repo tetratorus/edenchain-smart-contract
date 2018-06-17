@@ -2,13 +2,13 @@
   "name": "edenchain-smart-contract",
   "version": "1.0.0",
   "description": "**ERC20** Total supply: 1 billion EDEN Decimal factor: 18 Name: Eden Coin Symbol: EDEN",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
+  "main": "truffle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "truffle test"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "truffle-hdwallet-provider": "0.0.5"
+  }
 }
