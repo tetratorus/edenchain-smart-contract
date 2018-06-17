@@ -1,7 +1,8 @@
 import assertRevert from '../helpers/assertRevert';
 const EdenCoin = artifacts.require('EdenCoin');
+const decimalFactor = Math.pow(10, 18);
 
-contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
+contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   beforeEach(async function () {
@@ -11,8 +12,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
   describe('total supply', function () {
     it('returns the total amount of tokens', async function () {
       const totalSupply = await this.token.totalSupply();
-
-      assert.equal(totalSupply, 1000000000);
+      assert.equal(totalSupply, 1000000000 * decimalFactor);
     });
   });
 
@@ -28,8 +28,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
     describe('when the requested account has some tokens', function () {
       it('returns the total amount of tokens', async function () {
         const balance = await this.token.balanceOf(owner);
-
-        assert.equal(balance, 1000000000);
+        assert.equal(balance, 1000000000 * decimalFactor);
       });
     });
   });
@@ -39,7 +38,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       const to = recipient;
 
       describe('when the sender does not have enough balance', function () {
-        const amount = 1000000001;
+        const amount = 1000000001 * decimalFactor;
 
         it('reverts', async function () {
           await assertRevert(this.token.transfer(to, amount, { from: owner }));
@@ -47,7 +46,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       });
 
       describe('when the sender has enough balance', function () {
-        const amount = 1000000000;
+        const amount = 1000000000 * decimalFactor;
 
         it('transfers the requested amount', async function () {
           await this.token.transfer(to, amount, { from: owner });
@@ -75,7 +74,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       const to = ZERO_ADDRESS;
 
       it('reverts', async function () {
-        await assertRevert(this.token.transfer(to, 1000000000, { from: owner }));
+        await assertRevert(this.token.transfer(to, 1000000000 * decimalFactor, { from: owner }));
       });
     });
   });
@@ -85,7 +84,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       const spender = recipient;
 
       describe('when the sender has enough balance', function () {
-        const amount = 1000000000;
+        const amount = 1000000000 * decimalFactor;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.approve(spender, amount, { from: owner });
@@ -121,7 +120,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       });
 
       describe('when the sender does not have enough balance', function () {
-        const amount = 1000000001;
+        const amount = 1000000001 * decimalFactor;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.approve(spender, amount, { from: owner });
@@ -158,7 +157,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
     });
 
     describe('when the spender is the zero address', function () {
-      const amount = 1000000000;
+      const amount = 1000000000 * decimalFactor;
       const spender = ZERO_ADDRESS;
 
       it('approves the requested amount', async function () {
@@ -188,11 +187,11 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
 
       describe('when the spender has enough approved balance', function () {
         beforeEach(async function () {
-          await this.token.approve(spender, 1000000000, { from: owner });
+          await this.token.approve(spender, 1000000000 * decimalFactor, { from: owner });
         });
 
         describe('when the owner has enough balance', function () {
-          const amount = 1000000000;
+          const amount = 1000000000 * decimalFactor;
 
           it('transfers the requested amount', async function () {
             await this.token.transferFrom(owner, to, amount, { from: spender });
@@ -223,7 +222,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
         });
 
         describe('when the owner does not have enough balance', function () {
-          const amount = 1000000001;
+          const amount = 1000000001 * decimalFactor;
 
           it('reverts', async function () {
             await assertRevert(this.token.transferFrom(owner, to, amount, { from: spender }));
@@ -237,7 +236,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
         });
 
         describe('when the owner has enough balance', function () {
-          const amount = 1000000000;
+          const amount = 1000000000 * decimalFactor;
 
           it('reverts', async function () {
             await assertRevert(this.token.transferFrom(owner, to, amount, { from: spender }));
@@ -245,7 +244,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
         });
 
         describe('when the owner does not have enough balance', function () {
-          const amount = 1000000001;
+          const amount = 1000000001 * decimalFactor;
 
           it('reverts', async function () {
             await assertRevert(this.token.transferFrom(owner, to, amount, { from: spender }));
@@ -255,7 +254,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
     });
 
     describe('when the recipient is the zero address', function () {
-      const amount = 1000000000;
+      const amount = 1000000000 * decimalFactor;
       const to = ZERO_ADDRESS;
 
       beforeEach(async function () {
@@ -273,7 +272,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       const spender = recipient;
 
       describe('when the sender has enough balance', function () {
-        const amount = 1000000000;
+        const amount = 1000000000 * decimalFactor;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.decreaseApproval(spender, amount, { from: owner });
@@ -309,7 +308,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       });
 
       describe('when the sender does not have enough balance', function () {
-        const amount = 1000000001;
+        const amount = 1000000001 * decimalFactor;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.decreaseApproval(spender, amount, { from: owner });
@@ -346,7 +345,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
     });
 
     describe('when the spender is the zero address', function () {
-      const amount = 1000000000;
+      const amount = 1000000000 * decimalFactor;
       const spender = ZERO_ADDRESS;
 
       it('decreases the requested amount', async function () {
@@ -369,7 +368,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
   });
 
   describe('increase approval', function () {
-    const amount = 1000000000;
+    const amount = 1000000000 * decimalFactor;
 
     describe('when the spender is not the zero address', function () {
       const spender = recipient;
@@ -409,7 +408,7 @@ contract('EdenCoin', function ([_, owner, recipient, anotherAccount]) {
       });
 
       describe('when the sender does not have enough balance', function () {
-        const amount = 1000000001;
+        const amount = 1000000001 * decimalFactor;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.increaseApproval(spender, amount, { from: owner });
