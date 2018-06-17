@@ -1,6 +1,5 @@
 pragma solidity ^0.4.24;
 
-
 // ERC20 interface
 interface IERC20 {
   function balanceOf(address _owner) external view returns (uint256);
@@ -11,7 +10,6 @@ interface IERC20 {
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
-
 
 library SafeMath {
   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
