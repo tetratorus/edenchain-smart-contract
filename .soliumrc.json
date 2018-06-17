@@ -1,8 +1,9 @@
 {
-    "extends": "solium:recommended",
-    "plugins": ["security"],
-    "rules": {
-      "quotes": ["error", "double"],
-      "indentation": ["warn", 2]
-    }
+  "extends": "solium:recommended",
+  "rules": {
+    "imports-on-top": 0,
+    "variable-declarations": 0,
+    "indentation": ["error", 2],
+    "quotes": ["error", "double"]
   }
+}
