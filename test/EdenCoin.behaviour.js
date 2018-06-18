@@ -21,7 +21,6 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     describe('when the requested account has no tokens', function () {
       it('returns zero', async function () {
         const balance = await this.token.balanceOf(anotherAccount);
-
         assert.equal(balance, 0);
       });
     });
@@ -61,7 +60,6 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
 
         it('emits a transfer event', async function () {
           const { logs } = await this.token.transfer(to, amount, { from: owner });
-
           assert.equal(logs.length, 1);
           assert.equal(logs[0].event, 'Transfer');
           assert.equal(logs[0].args.from, owner);
