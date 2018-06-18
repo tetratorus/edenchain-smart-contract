@@ -63,49 +63,49 @@ contract Ownable {
 }
 
 /**
- * @title Whitelist
- * @dev The Whitelist contract has a whitelist of addresses, and provides basic authorization control functions.
- * This simplifies the implementation of "user permissions".
+ * @title DistributionList
+ * @dev The DistributionList contract holds a mapping of addresses to token balances.
+ * 
  */
-contract Whitelist is Ownable {
+contract DistributionList is Ownable {
  
   mapping(address => uint256) public addressToBalance;
 
   /**
-   * @dev add an address to the whitelist
+   * @dev add an address to the distribution list
    * @param _operator address
-   * @return true if the address was added to the whitelist, false if the address was already in the whitelist
+   * @return true if the address was added to the distribution list, false if the address was already in the distribution list
    */
-  function addAddressToWhitelist(address _whitelistee, uint256 _balance)
+  function addAddressToDistributionlist(address _listee, uint256 _balance)
     onlyOwner
     public
   {
-    addressToBalance[_whitelistee] = _balance;
+    addressToBalance[_listee] = _balance;
   }
 
   /**
-   * @dev add addresses to the whitelist
+   * @dev add addresses to the distribution list
    * @param _operators addresses
-   * @return true if at least one address was added to the whitelist,
-   * false if all addresses were already in the whitelist
+   * @return true if at least one address was added to the distribution list,
+   * false if all addresses were already in the distribution list
    */
-  function addAddressesToWhitelist(address[] _whitelistees, uint256[] _balances)
+  function addAddressesToDistributionlist(address[] _listees, uint256[] _balances)
     onlyOwner
     public
   {
-    require(_whitelistees.length == _balances.length);
-    for (uint256 i = 0; i < _whitelistees.length; i++) {
-      addAddressToWhitelist(_whitelistees[i], _balances[i]);
+    require(_listees.length == _balances.length);
+    for (uint256 i = 0; i < _listees.length; i++) {
+      addAddressToDistributionlist(_listees[i], _balances[i]);
     }
   }
 
   /**
-   * @dev remove an address from the whitelist
+   * @dev remove an address from the distribution list
    * @param _operator address
-   * @return true if the address was removed from the whitelist,
-   * false if the address wasn't in the whitelist in the first place
+   * @return true if the address was removed from the distribution list,
+   * false if the address wasn't in the distribution list in the first place
    */
-  function removeAddressFromWhitelist(address _toBeRemoved)
+  function removeAddressFromDistributionlist(address _toBeRemoved)
     onlyOwner
     public
   {
@@ -113,17 +113,17 @@ contract Whitelist is Ownable {
   }
 
   /**
-   * @dev remove addresses from the whitelist
+   * @dev remove addresses from the distribution list
    * @param _operators addresses
-   * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren't in the whitelist in the first place
+   * @return true if at least one address was removed from the distribution list,
+   * false if all addresses weren't in the distribution list in the first place
    */
-  function removeAddressesFromWhitelist(address[] _toBeRemoved)
+  function removeAddressesFromDistributionlist(address[] _toBeRemoved)
     onlyOwner
     public
   {
     for (uint256 i = 0; i < _toBeRemoved.length; i++) {
-      removeAddressFromWhitelist(_toBeRemoved[i]);
+      removeAddressFromDistributionlist(_toBeRemoved[i]);
     }
   }
 }
