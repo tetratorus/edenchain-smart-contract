@@ -67,7 +67,7 @@ contract Ownable {
   }
 }
 
-contract Multisend is Ownable {
+contract MultiSend is Ownable {
   function multisend(address _tokenAddress, address[] recipients, uint256[] values) onlyOwner public returns (uint256) {
     ERC20 token = ERC20(_tokenAddress);
     for (uint256 i = 0; i < recipients.length; i++) {
