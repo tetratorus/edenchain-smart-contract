@@ -52,7 +52,7 @@ library SafeERC20 {
  * @dev TokenTimelock is a token holder contract that will allow a
  * beneficiary to extract the tokens after a given release time
  */
-contract TokenTimelock {
+contract EdenTimeLock {
   using SafeERC20 for ERC20Basic;
 
   // ERC20 basic token contract being held
@@ -65,17 +65,17 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   constructor(
-    ERC20Basic _token,
+    address _token,
     address _beneficiary,
-    uint256 _releaseTime
+    uint256 _lockupInDays
   )
     public
   {
     // solium-disable-next-line security/no-block-members
-    require(_releaseTime > block.timestamp);
-    token = _token;
+    require(_lockupInDays > 0);
+    token = ERC20Basic(_token);
     beneficiary = _beneficiary;
-    releaseTime = _releaseTime;
+    releaseTime = now + _lockupInDays * 1 days;
   }
 
   /**

@@ -2,6 +2,10 @@ import assertRevert from '../helpers/assertRevert';
 const BigNumber = web3.BigNumber;
 const EdenCoin = artifacts.require('EdenCoin');
 const decimalFactor = new BigNumber(Math.pow(10, 18));
+const totalTokens = Math.pow(10, 9);
+const totalSupply = decimalFactor.times(totalTokens);
+const decodeLogs = require('../helpers/decodeLogs');
+const checkTransferEvent = require('../helpers/checkTransferEvent');
 
 contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -10,10 +14,36 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     this.token = await EdenCoin.new();
   });
 
+  describe('basic properties', function () {
+    it('name', async function() {
+      assert.equal(await this.token.name(), 'Eden Coin');
+    });
+
+    it('symbol', async function() {
+      assert.equal(await this.token.symbol(), 'EDEN');
+    });
+
+    it('decimals', async function() {
+      assert.equal(await this.token.decimals(), 18);
+    });
+
+    it('balances is private', async function() {
+      assert.isTrue(typeof this.token.balances === 'undefined');
+    });
+
+    it('constructor emitted transfer event', async function() {
+      const receipt = await web3.eth.getTransactionReceipt(this.token.transactionHash);
+      assert.equal(receipt.logs.length, 1);
+      const logs = decodeLogs(this.token.abi, [ receipt.logs[0] ]);
+      checkTransferEvent(logs[0], '0x0000000000000000000000000000000000000000', owner, totalSupply);
+    });
+
+  });
+
   describe('total supply', function () {
     it('returns the total amount of tokens', async function () {
-      const totalSupply = await this.token.totalSupply();
-      assert.equal(totalSupply.toString(), decimalFactor.times(Math.pow(10, 9)).toString());
+      const _totalSupply = await this.token.totalSupply();
+      assert.equal(_totalSupply.toNumber(), totalSupply.toNumber());
     });
   });
 
@@ -21,7 +51,6 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     describe('when the requested account has no tokens', function () {
       it('returns zero', async function () {
         const balance = await this.token.balanceOf(anotherAccount);
-
         assert.equal(balance, 0);
       });
     });
@@ -29,7 +58,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     describe('when the requested account has some tokens', function () {
       it('returns the total amount of tokens', async function () {
         const balance = await this.token.balanceOf(owner);
-        assert.equal(balance.toString(), decimalFactor.times(Math.pow(10,9)).toString());
+        assert.equal(balance.toNumber(), totalSupply.toNumber());
       });
     });
   });
@@ -47,7 +76,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
       });
 
       describe('when the sender has enough balance', function () {
-        const amount = decimalFactor.times(Math.pow(10,9));
+        const amount = totalSupply;
 
         it('transfers the requested amount', async function () {
           await this.token.transfer(to, amount, { from: owner });
@@ -56,12 +85,11 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
           assert.equal(senderBalance, 0);
 
           const recipientBalance = await this.token.balanceOf(to);
-          assert.equal(recipientBalance.toString(), amount.toString());
+          assert.equal(recipientBalance.toNumber(), amount.toNumber());
         });
 
         it('emits a transfer event', async function () {
           const { logs } = await this.token.transfer(to, amount, { from: owner });
-
           assert.equal(logs.length, 1);
           assert.equal(logs[0].event, 'Transfer');
           assert.equal(logs[0].args.from, owner);
@@ -75,7 +103,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
       const to = ZERO_ADDRESS;
 
       it('reverts', async function () {
-        await assertRevert(this.token.transfer(to, decimalFactor.times(Math.pow(10,9)), { from: owner }));
+        await assertRevert(this.token.transfer(to, totalSupply, { from: owner }));
       });
     });
   });
@@ -85,7 +113,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
       const spender = recipient;
 
       describe('when the sender has enough balance', function () {
-        const amount = decimalFactor.times(Math.pow(10,9));
+        const amount = totalSupply;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.approve(spender, amount, { from: owner });
@@ -102,7 +130,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.approve(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
 
@@ -115,7 +143,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.approve(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
       });
@@ -138,7 +166,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.approve(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
 
@@ -151,21 +179,21 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.approve(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
       });
     });
 
     describe('when the spender is the zero address', function () {
-      const amount = decimalFactor.times(Math.pow(10,9));
+      const amount = totalSupply;
       const spender = ZERO_ADDRESS;
 
       it('approves the requested amount', async function () {
         await this.token.approve(spender, amount, { from: owner });
 
         const allowance = await this.token.allowance(owner, spender);
-        assert.equal(allowance.toString(), amount.toString());
+        assert.equal(allowance.toNumber(), amount.toNumber());
       });
 
       it('emits an approval event', async function () {
@@ -192,7 +220,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
         });
 
         describe('when the owner has enough balance', function () {
-          const amount = decimalFactor.times(Math.pow(10,9));
+          const amount = totalSupply;
 
           it('transfers the requested amount', async function () {
             await this.token.transferFrom(owner, to, amount, { from: spender });
@@ -201,7 +229,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             assert.equal(senderBalance, 0);
 
             const recipientBalance = await this.token.balanceOf(to);
-            assert.equal(recipientBalance.toString(), amount.toString());
+            assert.equal(recipientBalance.toNumber(), amount.toNumber());
           });
 
           it('decreases the spender allowance', async function () {
@@ -237,7 +265,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
         });
 
         describe('when the owner has enough balance', function () {
-          const amount = decimalFactor.times(Math.pow(10,9));
+          const amount = totalSupply;
 
           it('reverts', async function () {
             await assertRevert(this.token.transferFrom(owner, to, amount, { from: spender }));
@@ -255,7 +283,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     });
 
     describe('when the recipient is the zero address', function () {
-      const amount = decimalFactor.times(Math.pow(10,9));
+      const amount = totalSupply;
       const to = ZERO_ADDRESS;
 
       beforeEach(async function () {
@@ -273,7 +301,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
       const spender = recipient;
 
       describe('when the sender has enough balance', function () {
-        const amount = decimalFactor.times(Math.pow(10,9));
+        const amount = totalSupply;
 
         it('emits an approval event', async function () {
           const { logs } = await this.token.decreaseApproval(spender, amount, { from: owner });
@@ -302,10 +330,10 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
 
           it('decreases the spender allowance subtracting the requested amount', async function () {
             const a = await this.token.allowance(owner, spender);
+            assert.equal(a.toNumber(), amount.plus(1).toNumber());
             await this.token.decreaseApproval(spender, amount, { from: owner });
-
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), "1");
+            assert.equal(allowance.toNumber(), 1);
           });
         });
       });
@@ -348,7 +376,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
     });
 
     describe('when the spender is the zero address', function () {
-      const amount = decimalFactor.times(Math.pow(10,9));
+      const amount = totalSupply;
       const spender = ZERO_ADDRESS;
 
       it('decreases the requested amount', async function () {
@@ -371,7 +399,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
   });
 
   describe('increase approval', function () {
-    const amount = decimalFactor.times(Math.pow(10,9));
+    const amount = totalSupply;
 
     describe('when the spender is not the zero address', function () {
       const spender = recipient;
@@ -392,7 +420,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.increaseApproval(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
 
@@ -405,7 +433,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.increaseApproval(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.plus(1).toString());
+            assert.equal(allowance.toNumber(), amount.plus(1).toNumber());
           });
         });
       });
@@ -428,7 +456,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.increaseApproval(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.toString());
+            assert.equal(allowance.toNumber(), amount.toNumber());
           });
         });
 
@@ -441,7 +469,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
             await this.token.increaseApproval(spender, amount, { from: owner });
 
             const allowance = await this.token.allowance(owner, spender);
-            assert.equal(allowance.toString(), amount.plus(1).toString());
+            assert.equal(allowance.toNumber(), amount.plus(1).toNumber());
           });
         });
       });
@@ -454,7 +482,7 @@ contract('EdenCoin', function ([owner, recipient, anotherAccount]) {
         await this.token.increaseApproval(spender, amount, { from: owner });
 
         const allowance = await this.token.allowance(owner, spender);
-        assert.equal(allowance.toString(), amount.toString());
+        assert.equal(allowance.toNumber(), amount.toNumber());
       });
 
       it('emits an approval event', async function () {
