@@ -14,3 +14,13 @@ Symbol: EDEN
 **Deployment scripts**
 - Mass issuance of tokens
 - Issuance of locked-up tokens
+
+
+For linting, install solium:
+```
+npm install -g solium
+```
+then run:
+```
+npm run lint
+```

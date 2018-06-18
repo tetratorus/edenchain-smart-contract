@@ -1,3 +1,5 @@
+require('babel-register');
+require('babel-polyfill');
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const secrets = require('./secrets.json');
 const mnemonic = secrets.mnemonic;
