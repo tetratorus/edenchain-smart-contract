@@ -5,8 +5,7 @@ const EdenTimeLock = artifacts.require('EdenTimeLock');
 const decimalFactor = new BigNumber(Math.pow(10, 18));
 const timeTravel = require('../helpers/timeTravel')(web3);
 
-contract('EdenTimeLock', function ([owner, recipient, anotherAccount]) {
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+contract('EdenTimeLock', function ([owner, recipient]) {
 
   beforeEach(async function () {
     this.token = await EdenCoin.new();
@@ -24,20 +23,20 @@ contract('EdenTimeLock', function ([owner, recipient, anotherAccount]) {
     });
 
     it('reverts if timelock is not over', async function () {
-      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365)
+      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365);
       await this.token.transfer(timelock.address, 1000000 * decimalFactor);
       await assertRevert(timelock.release({from: recipient}));
     });
 
     it('transfers tokens if timelock has passed', async function () {
-      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365)
+      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365);
       await this.token.transfer(timelock.address, 1000000 * decimalFactor);
       await timeTravel(365 * 24 * 60 * 60);
       await timelock.release({from: recipient});
     });
 
     it('cannot be released twice', async function () {
-      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365)
+      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365);
       await this.token.transfer(timelock.address, 1000000 * decimalFactor);
       await timeTravel(365 * 24 * 60 * 60);
       await timelock.release();
