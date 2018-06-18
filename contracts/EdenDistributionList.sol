@@ -73,7 +73,7 @@ contract DistributionList is Ownable {
 
   /**
    * @dev add an address to the distribution list
-   * @param _operator address
+   * @param _listee address
    * @return true if the address was added to the distribution list, false if the address was already in the distribution list
    */
   function addAddressToDistributionlist(address _listee, uint256 _balance)
@@ -85,7 +85,8 @@ contract DistributionList is Ownable {
 
   /**
    * @dev add addresses to the distribution list
-   * @param _operators addresses
+   * @param _listees address[]
+   * @param _balances unint256[]
    * @return true if at least one address was added to the distribution list,
    * false if all addresses were already in the distribution list
    */
@@ -101,7 +102,7 @@ contract DistributionList is Ownable {
 
   /**
    * @dev remove an address from the distribution list
-   * @param _operator address
+   * @param _toBeRemoved address
    * @return true if the address was removed from the distribution list,
    * false if the address wasn't in the distribution list in the first place
    */
@@ -114,7 +115,7 @@ contract DistributionList is Ownable {
 
   /**
    * @dev remove addresses from the distribution list
-   * @param _operators addresses
+   * @param _toBeRemoved addresses
    * @return true if at least one address was removed from the distribution list,
    * false if all addresses weren't in the distribution list in the first place
    */
