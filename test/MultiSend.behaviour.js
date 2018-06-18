@@ -61,7 +61,6 @@ contract('MultiSend', function ([owner, recipient, anotherAccount]) {
         randomizedAmounts
       );
       for (let j = 0; j < 50; j++) {
-        // let r = Math.floor(Math.random() * 80);
         assert.equal((await this.token.balanceOf(accountAddresses[j])).toNumber(), randomizedAmounts[j].toNumber());
       }
     });
