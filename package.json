@@ -18,6 +18,8 @@
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
     "eslint": "^4.19.1",
+    "ethereumjs-util": "^5.2.0",
+    "ethereumjs-wallet": "^0.6.0",
     "truffle": "^4.1.11",
     "truffle-hdwallet-provider": "0.0.5"
   }
