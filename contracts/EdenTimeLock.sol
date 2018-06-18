@@ -65,7 +65,7 @@ contract TokenTimelock {
   uint256 public releaseTime;
 
   constructor(
-    ERC20Basic _token,
+    address _token,
     address _beneficiary,
     uint256 _releaseTime
   )
@@ -73,7 +73,7 @@ contract TokenTimelock {
   {
     // solium-disable-next-line security/no-block-members
     require(_releaseTime > block.timestamp);
-    token = _token;
+    token = ERC20Basic(_token);
     beneficiary = _beneficiary;
     releaseTime = _releaseTime;
   }
