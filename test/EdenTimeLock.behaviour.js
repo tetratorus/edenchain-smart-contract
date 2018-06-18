@@ -35,6 +35,16 @@ contract('EdenTimeLock', function ([owner, recipient, anotherAccount]) {
       await web3helpers.timeTravel(365 * 24 * 60 * 60);
       await timelock.release({from: recipient});
     });
+
+    it('cannot be released twice', async function () {
+      const timelock = await EdenTimeLock.new(this.token.address, recipient, 365)
+      await this.token.transfer(timelock.address, 1000000 * decimalFactor);
+      await web3helpers.timeTravel(365 * 24 * 60 * 60);
+      await timelock.release();
+      await assertRevert(timelock.release());
+      const balance = await this.token.balanceOf(recipient);
+      assert.equal(balance.toString(), (new BigNumber(1000000 * decimalFactor)).toString());
+    });
   
   });
   
