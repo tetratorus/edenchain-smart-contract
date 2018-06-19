@@ -24,3 +24,16 @@ then run:
 ```
 npm run lint
 ```
+
+To run tests, install truffle framework:
+```
+npm install -g truffle
+```
+and install dependencies:
+```
+npm install
+```
+and then run:
+```
+npm test
+```
